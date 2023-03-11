@@ -2,8 +2,6 @@ package net.dev4any1.tbot;
 
 import java.util.Scanner;
 
-import java.util.Scanner;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import net.dev4any1.tbot.dao.SubscriberRepository;
+import net.dev4any1.tbot.service.BotService;
 
 @Configuration
 @EnableAutoConfiguration(exclude = {EmbeddedMongoAutoConfiguration.class})
@@ -25,10 +24,13 @@ public class App implements CommandLineRunner {
 
 	@Autowired
 	SubscriberRepository repo;
-
+	@Autowired
+	BotService bs;
+	
 	@Override
 	public void run(String... args) throws Exception {
 		log.info("starting tbot for " + repo.count() + " subscribers");
+		bs.serviceDefault();
 		try (Scanner scan = new Scanner(System.in)) {
 			while (scan.hasNext()) {
 				if (scan.next().equals("exit")) {
