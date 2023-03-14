@@ -53,11 +53,7 @@ public class Helper {
 
 		private static String normalizeLink(String link) {
 			if (!link.isEmpty()) {
-				if (!link.startsWith("/url?q=http")) {
-					link = "";
-				} else {
-					link = link.substring(7);
-				}
+				link = (!link.startsWith("/url?q=http")) ? "" : link.substring(7, link.indexOf("&sa="));
 			}
 			return link;
 		}
