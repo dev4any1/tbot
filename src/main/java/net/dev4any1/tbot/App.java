@@ -16,7 +16,7 @@ import net.dev4any1.tbot.dao.SubscriberRepository;
 import net.dev4any1.tbot.service.BotService;
 
 @Configuration
-@EnableAutoConfiguration(exclude = {EmbeddedMongoAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = { EmbeddedMongoAutoConfiguration.class })
 @ComponentScan
 public class App implements CommandLineRunner {
 
@@ -26,7 +26,7 @@ public class App implements CommandLineRunner {
 	SubscriberRepository repo;
 	@Autowired
 	BotService bs;
-	
+
 	@Override
 	public void run(String... args) throws Exception {
 		log.info("starting tbot for " + repo.count() + " subscribers");

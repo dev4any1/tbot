@@ -9,11 +9,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Field.Write;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
-import org.telegram.telegrambots.meta.api.objects.User;
 
-public class Subscriber extends User implements Serializable{
+public class UpdateDoc implements Serializable {
 
-	private static final long serialVersionUID = Subscriber.class.getName().hashCode();
+	private static final long serialVersionUID = UpdateDoc.class.getName().hashCode();
 
 	@Id
 	@MongoId
@@ -21,15 +20,31 @@ public class Subscriber extends User implements Serializable{
 
 	@Indexed(unique = true)
 	@Field(targetType = FieldType.STRING, write = Write.NON_NULL)
-	private String gsmNo;
+	private String update;
 
-	public Subscriber(String gsmNo) {
-		this.gsmNo = gsmNo;
+	public UpdateDoc(String update) {
+		this.update = update;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getUpdate() {
+		return update;
+	}
+
+	public void setUpdate(String update) {
+		this.update = update;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(gsmNo, id);
+		return Objects.hash(id, update);
 	}
 
 	@Override
@@ -40,13 +55,13 @@ public class Subscriber extends User implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Subscriber other = (Subscriber) obj;
-		return Objects.equals(gsmNo, other.gsmNo) && Objects.equals(id, other.id);
+		UpdateDoc other = (UpdateDoc) obj;
+		return Objects.equals(id, other.id) && Objects.equals(update, other.update);
 	}
 
 	@Override
 	public String toString() {
-		return "Subscriber [id=" + id + ", gsmNo=" + gsmNo + "]";
+		return "UpdateDoc [id=" + id + ", update=" + update + "]";
 	}
 
 }

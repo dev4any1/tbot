@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import net.dev4any1.tbot.TestMongoConfig;
 import net.dev4any1.tbot.model.Subscriber;
-import net.dev4any1.tbot.service.SubscriberService;
 
 @SpringBootTest(classes = { SubscriberService.class })
 @ExtendWith(SpringExtension.class)
