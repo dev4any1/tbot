@@ -9,21 +9,21 @@ import org.springframework.data.mongodb.core.mapping.MongoId;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class PollUpdate implements Serializable {
-    private static final long serialVersionUID = PollUpdate.class.getName().hashCode();
+public class PollUpdateEntity implements Serializable {
+    private static final long serialVersionUID = PollUpdateEntity.class.getName().hashCode();
 
     @Id
     @MongoId
     private String id;
 
-    @Indexed(unique = true)
+    @Indexed(unique = false)
     @Field(targetType = FieldType.STRING, write = Field.Write.NON_NULL)
     private String pollId;
 
     @Field(targetType = FieldType.STRING, write = Field.Write.NON_NULL)
     private String poll;
 
-    public PollUpdate(String pollId, String poll) {
+    public PollUpdateEntity(String pollId, String poll) {
         this.pollId = pollId;
         this.poll = poll;
     }
@@ -63,7 +63,7 @@ public class PollUpdate implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        PollUpdate other = (PollUpdate) obj;
+        PollUpdateEntity other = (PollUpdateEntity) obj;
         return Objects.equals(id, other.id) && Objects.equals(poll, other.poll) && Objects.equals(pollId, other.pollId);
     }
 

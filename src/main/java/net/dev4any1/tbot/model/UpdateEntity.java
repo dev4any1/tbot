@@ -10,19 +10,18 @@ import org.springframework.data.mongodb.core.mapping.Field.Write;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-public class UpdateDoc implements Serializable {
+public class UpdateEntity implements Serializable {
 
-	private static final long serialVersionUID = UpdateDoc.class.getName().hashCode();
+	private static final long serialVersionUID = UpdateEntity.class.getName().hashCode();
 
 	@Id
 	@MongoId
 	private String id;
 
-	@Indexed(unique = true)
 	@Field(targetType = FieldType.STRING, write = Write.NON_NULL)
 	private String update;
 
-	public UpdateDoc(String update) {
+	public UpdateEntity(String update) {
 		this.update = update;
 	}
 
@@ -55,7 +54,7 @@ public class UpdateDoc implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UpdateDoc other = (UpdateDoc) obj;
+		UpdateEntity other = (UpdateEntity) obj;
 		return Objects.equals(id, other.id) && Objects.equals(update, other.update);
 	}
 

@@ -1,5 +1,6 @@
 package net.dev4any1.tbot;
 
+import java.util.Date;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoCo
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import net.dev4any1.tbot.dao.SubscriberRepository;
 import net.dev4any1.tbot.service.BotService;
 
 @Configuration
@@ -23,13 +23,11 @@ public class App implements CommandLineRunner {
 	private static final Logger log = LoggerFactory.getLogger(App.class);
 
 	@Autowired
-	SubscriberRepository repo;
-	@Autowired
 	BotService bs;
 
 	@Override
 	public void run(String... args) throws Exception {
-		log.info("starting tbot for " + repo.count() + " subscribers");
+		log.info("starting tbot at " + new Date());
 		bs.serviceDefault();
 		try (Scanner scan = new Scanner(System.in)) {
 			while (scan.hasNext()) {
