@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.dev4any1.tbot.dao.PollRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +42,14 @@ public class BotService {
 
 	@Autowired
 	private UpdateRepository upr;
+	@Autowired
+	private PollRepository pollRepository;
 
 	private Bot bot;
 
 	public void serviceDefault() {
 		if (bot == null) {
-			bot = new Bot(new DefaultBotOptions(), token, name, upr);
+			bot = new Bot(new DefaultBotOptions(), token, name, upr, pollRepository);
 		}
 		try {
 			TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -70,7 +73,7 @@ public class BotService {
 		for (String option: Arrays.asList(answers.split(" "))) {
 			options.add(new PollOption(option, 0));
 		}
-		bot.sendPoll(question, options, gsmNos);
+//		bot.sendPoll(question, options, gsmNos);
 	}
 
 }
