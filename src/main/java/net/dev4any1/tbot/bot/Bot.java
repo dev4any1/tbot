@@ -1,75 +1,79 @@
 package net.dev4any1.tbot.bot;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import net.dev4any1.tbot.dao.PollRepository;
-import net.dev4any1.tbot.model.PollUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.polls.PollOption;
-import org.telegram.telegrambots.meta.api.objects.polls.Poll;
-import org.telegram.telegrambots.meta.api.objects.polls.PollAnswer;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import net.dev4any1.tbot.dao.PollRepository;
 import net.dev4any1.tbot.dao.UpdateRepository;
-import net.dev4any1.tbot.model.UpdateDoc;
+import net.dev4any1.tbot.model.PollUpdateEntity;
+import net.dev4any1.tbot.model.UpdateEntity;
 
 public class Bot extends TelegramLongPollingBot {
 
 	private static final Logger log = LoggerFactory.getLogger(Bot.class);
 
+	private static final String BOT_WELCOME = "Привет! Я бот для опросов. Чтобы начать опрос, введите команду /poll.";
+	private static final String POLL_QUESTION = "Какие есть варианты?";
+	private static final String POLL_QUESTION_ANONYM = "Какие есть варианты анонимно?";
+	private static final List<String> POLL_OPTIONS = List.of("Я", "В костюме", "Без костюма");
+
 	private String botName;
-	private UpdateRepository upr;
+	private UpdateRepository updateRepository;
 	private PollRepository pollRepository;
 
-	public Bot(DefaultBotOptions options, String botToken, String name, UpdateRepository upr, PollRepository pollRepository) {
+	public Bot(DefaultBotOptions options, String botToken, String name, UpdateRepository updateRepository,
+			PollRepository pollRepository) {
 		super(options, botToken);
 		this.botName = name;
-		this.upr = upr;
+		this.updateRepository = updateRepository;
 		this.pollRepository = pollRepository;
 	}
 
 	@Override
 	public void onUpdateReceived(Update update) {
 		log.debug("update " + update.getClass() + " toStr: " + update.toString());
-
+		// saving any update
+		updateRepository.insert(new UpdateEntity(Helper.getJson(update).get()));
+		// saving non anonymous poll reply
 		if (update.hasPollAnswer()) {
-			pollRepository.save(new PollUpdate(update.getPollAnswer().getPollId(), update.getPollAnswer().toString()));
+			pollRepository.save(new PollUpdateEntity(update.getPollAnswer().getPollId(),
+					Helper.getJson(update.getPollAnswer()).get()));
 		}
+		// saving anonymous poll reply
 		if (update.hasPoll()) {
-			pollRepository.save(new PollUpdate(update.getPoll().getId(), update.getPoll().toString()));
+			pollRepository.save(new PollUpdateEntity(update.getPoll().getId(), Helper.getJson(update.getPoll()).get()));
 		}
+		// handling command
 		if (update.hasMessage() && update.getMessage().hasText()) {
 			String messageText = update.getMessage().getText();
 			String chatId = update.getMessage().getChatId().toString();
-			System.out.println("ChatID:  "+chatId);
+			System.out.println("ChatID:  " + chatId);
 
 			switch (messageText) {
-				case "/start":
-					sendTextMessage(chatId, "Привет! Я бот для опросов. Чтобы начать опрос, введите команду /poll.");
-					break;
-				case "/poll":
-					sendPoll(chatId, "Какие есть варианты?",
-							List.of("Я", "В костюме", "Без костюма"), false);
-					break;
-				case "/pollAnswer":
-					sendPoll(chatId, "Какие есть варианты анонимно?",
-							List.of("Я", "В костюме", "Без костюма"), true);
-					break;
-				case "/stat":
-					String statistic = pollRepository.findAll()
-						.stream()
-						.map(PollUpdate::getPoll)
+			case "/start":
+				sendTextMessage(chatId, BOT_WELCOME);
+				break;
+			case "/poll":
+				sendPoll(chatId, POLL_QUESTION, POLL_OPTIONS, false);
+				break;
+			case "/pollAnonym":
+				sendPoll(chatId, POLL_QUESTION_ANONYM, POLL_OPTIONS, true);
+				break;
+			case "/stats":
+				String statistic = pollRepository.findAll().stream().map(PollUpdateEntity::getPoll)
 						.collect(Collectors.joining(", "));
-					sendTextMessage(chatId, statistic);
-					break;
+				sendTextMessage(chatId, statistic);
+				break;
 			}
 		}
 	}
@@ -104,16 +108,6 @@ public class Bot extends TelegramLongPollingBot {
 
 	public Map<String, Integer> getPollResults() {
 		return null;
-	}
-
-	public String getGooAnswer(String query) {
-		Collection<SearchResult> searches = Helper.Searcher.search(query, 1);
-		if (!searches.isEmpty()) {
-			SearchResult sr = searches.iterator().next();
-			return "[" + sr.getTitle() + "](" + sr.getLink() + ")";
-		} else {
-			return "uh oh..";
-		}
 	}
 
 	@Override

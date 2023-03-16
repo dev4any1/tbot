@@ -1,10 +1,9 @@
 package net.dev4any1.tbot.dao;
 
-import net.dev4any1.tbot.model.PollUpdate;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import net.dev4any1.tbot.model.UpdateDoc;
+import net.dev4any1.tbot.model.UpdateEntity;
 
-public interface UpdateRepository extends MongoRepository<PollUpdate, String> {
+public interface UpdateRepository extends MongoRepository<UpdateEntity, String> {
 
 }
