@@ -1,5 +1,6 @@
 package net.dev4any1.tbot.bot;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,10 +42,10 @@ public class Bot extends TelegramLongPollingBot {
 		log.debug("update " + update.getClass() + " toStr: " + update.toString());
 
 		if (update.hasPollAnswer()) {
-			pollRepository.save(new PollUpdate(update.getPollAnswer().getPollId(), update.getPollAnswer().toString()));
+			pollRepository.save(new PollUpdate(update.getPollAnswer().getPollId(), update.getPollAnswer().toString(), Instant.now()));
 		}
 		if (update.hasPoll()) {
-			pollRepository.save(new PollUpdate(update.getPoll().getId(), update.getPoll().toString()));
+			pollRepository.save(new PollUpdate(update.getPoll().getId(), update.getPoll().toString(), Instant.now()));
 		}
 		if (update.hasMessage() && update.getMessage().hasText()) {
 			String messageText = update.getMessage().getText();
